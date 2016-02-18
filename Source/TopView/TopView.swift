@@ -16,29 +16,43 @@ class TopView: UIView {
 
   var currentFlashIndex = 0
   let flashButtonTitles = ["AUTO", "ON", "OFF"]
+    
+    var flashButton: UIButton!
+    var rotateCamera: UIButton!
+    
+    func createFlashButton() -> UIButton {
+        let button = UIButton()
+        button.setImage( self.getImage("AUTO"), forState: .Normal)
+        button.setTitle("AUTO", forState: .Normal)
+        button.titleEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 0)
+        button.setTitleColor(.whiteColor(), forState: .Normal)
+        button.setTitleColor(.whiteColor(), forState: .Highlighted)
+        button.titleLabel?.font = Configuration.flashButton
+        button.addTarget(self, action: "flashButtonDidPress:", forControlEvents: .TouchUpInside)
+        button.contentHorizontalAlignment = .Left
+        button.layer.shadowColor = UIColor.blackColor().CGColor
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 0, height: 1)
+        button.layer.shadowRadius = 1
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }
 
-  lazy var flashButton: UIButton = { [unowned self] in
-    let button = UIButton()
-    button.setImage(self.getImage("AUTO"), forState: .Normal)
-    button.setTitle("AUTO", forState: .Normal)
-    button.titleEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 0)
-    button.setTitleColor(.whiteColor(), forState: .Normal)
-    button.setTitleColor(.whiteColor(), forState: .Highlighted)
-    button.titleLabel?.font = Configuration.flashButton
-    button.addTarget(self, action: "flashButtonDidPress:", forControlEvents: .TouchUpInside)
-    button.contentHorizontalAlignment = .Left
-
-    return button
-    }()
-
-  lazy var rotateCamera: UIButton = { [unowned self] in
+    
+    func createRotateCamera() -> UIButton {
     let button = UIButton()
     button.setImage(self.getImage("cameraIcon"), forState: .Normal)
     button.addTarget(self, action: "rotateCameraButtonDidPress:", forControlEvents: .TouchUpInside)
     button.imageView?.contentMode = .Center
+    button.layer.shadowColor = UIColor.blackColor().CGColor
+    button.layer.shadowOpacity = 0.5
+    button.layer.shadowOffset = CGSize(width: 0, height: 1)
+    button.layer.shadowRadius = 1
+    button.translatesAutoresizingMaskIntoConstraints = false
 
     return button
-    }()
+    }
 
   weak var delegate: TopViewDelegate?
 
@@ -47,23 +61,32 @@ class TopView: UIView {
   override init(frame: CGRect) {
     super.init(frame: frame)
 
-    for button in [flashButton, rotateCamera] {
-      button.layer.shadowColor = UIColor.blackColor().CGColor
-      button.layer.shadowOpacity = 0.5
-      button.layer.shadowOffset = CGSize(width: 0, height: 1)
-      button.layer.shadowRadius = 1
-      button.translatesAutoresizingMaskIntoConstraints = false
-      addSubview(button)
-    }
-
-    setupConstraints()
+    initButtons()
   }
 
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+    
+  func initButtons() {
+    // Delete old subviews
+    for view in subviews {
+        view.removeFromSuperview()
+    }
+    
+    flashButton = getRotated(createFlashButton())
+    rotateCamera = getRotated(createRotateCamera())
+    
+    // Set new buttons
+    addSubview(flashButton)
+    addSubview(rotateCamera)
+    
+    setupConstraints()
+  }
 
   // MARK: - Action methods
+    
+
 
   func flashButtonDidPress(button: UIButton) {
     currentFlashIndex++
@@ -104,4 +127,25 @@ class TopView: UIView {
 
     return image
   }
+    
+    func getRotated(button: UIButton) -> UIButton {
+        let orientation = UIDevice.currentDevice().orientation
+        switch orientation {
+        case .Portrait:
+            break
+        case .LandscapeLeft:
+            button.transform = CGAffineTransformMakeRotation(CGFloat(M_PI * 90 / 180.0));
+        case .LandscapeRight:
+            button.transform = CGAffineTransformMakeRotation(CGFloat(-1 * M_PI * 90 / 180.0));
+        case .PortraitUpsideDown:
+            button.transform = CGAffineTransformMakeRotation(CGFloat(M_PI));
+        default:
+            break
+        }
+        return button
+    }
+    
+    func deviceOrientationChanged() {
+        initButtons()
+    }
 }

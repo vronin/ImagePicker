@@ -138,7 +138,11 @@ public class ImagePickerController: UIViewController {
   public override func viewDidDisappear(animated: Bool) {
     super.viewDidDisappear(animated)
   }
-
+    
+    public override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
   // MARK: - Notifications
 
   deinit {
@@ -166,7 +170,18 @@ public class ImagePickerController: UIViewController {
       selector: "volumeChanged:",
       name: "AVSystemController_SystemVolumeDidChangeNotification",
       object: nil)
+    
+    NSNotificationCenter.defaultCenter().addObserver(self,
+      selector: "rotated:",
+      name: UIDeviceOrientationDidChangeNotification,
+      object: nil)
   }
+    
+  func rotated(notification: NSNotification) {
+        cameraController.deviceOrientationChanged()
+        galleryView.deviceOrientationChanged()
+        topView.deviceOrientationChanged()
+    }
 
   func volumeChanged(notification: NSNotification) {
     guard let slider = volumeView.subviews.filter({ $0 is UISlider }).first as? UISlider,
@@ -401,6 +416,9 @@ extension ImagePickerController: ImageGalleryPanGestureDelegate {
       collapseGalleryView(nil)
     }
   }
+    
+
+
 
   override public func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)

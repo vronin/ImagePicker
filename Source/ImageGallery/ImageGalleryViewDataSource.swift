@@ -18,7 +18,19 @@ extension ImageGalleryView: UICollectionViewDataSource {
     let asset = assets[indexPath.row]
 
     ImagePicker.resolveAsset(asset, size: CGSize(width: 160, height: 240)) { image in
-      if let image = image {
+      if var image = image {
+        
+        switch UIDevice.currentDevice().orientation {
+        case .LandscapeLeft:
+            image = UIImage(CGImage: image.CGImage! , scale: 1.0 , orientation: UIImageOrientation.Right)
+        case .LandscapeRight:
+            image = UIImage(CGImage: image.CGImage! , scale: 1.0 , orientation: UIImageOrientation.Left)
+        case .PortraitUpsideDown:
+            image = UIImage(CGImage: image.CGImage! , scale: 1.0 , orientation: UIImageOrientation.Down)
+        default:
+            break
+        }
+        
         cell.configureCell(image)
 
         if indexPath.row == 0 && self.shouldTransform {

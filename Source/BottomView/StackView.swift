@@ -142,7 +142,20 @@ extension ImageStackView {
     for (index, view) in views.enumerate() {
       if index <= photos.count - 1 {
         ImagePicker.resolveAsset(photos[index], size: CGSize(width: Dimensions.imageSize, height: Dimensions.imageSize)) { image in
-          view.image = image
+            var rotatedImage : UIImage!
+            switch UIDevice.currentDevice().orientation {
+            case .Portrait:
+                rotatedImage = image!
+            case .LandscapeLeft:
+                rotatedImage = UIImage(CGImage: image!.CGImage! , scale: 1.0 , orientation: UIImageOrientation.Right)
+            case .LandscapeRight:
+                rotatedImage = UIImage(CGImage: image!.CGImage! , scale: 1.0 , orientation: UIImageOrientation.Left)
+            case .PortraitUpsideDown:
+                rotatedImage = UIImage(CGImage: image!.CGImage! , scale: 1.0 , orientation: UIImageOrientation.Down)
+            default:
+                break
+            }
+          view.image = rotatedImage
         }
         view.alpha = 1
       } else {

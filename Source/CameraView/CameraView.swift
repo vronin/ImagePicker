@@ -376,15 +376,11 @@ class CameraView: UIViewController {
 
     return image
   }
-
-  override func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-    super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
-
+ 
+  func deviceOrientationChanged() {
     guard let previewLayer = self.previewLayer,
       connection = previewLayer.connection
       else { return }
-
-    previewLayer.frame.size = size
 
     switch UIDevice.currentDevice().orientation {
     case .Portrait:

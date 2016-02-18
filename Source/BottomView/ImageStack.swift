@@ -26,6 +26,10 @@ public class ImageStack {
     assets = assetsArray
     NSNotificationCenter.defaultCenter().postNotificationName(Notifications.stackDidReload, object: self, userInfo: nil)
   }
+    
+  public func reloadAssets() {
+      NSNotificationCenter.defaultCenter().postNotificationName(Notifications.stackDidReload, object: self, userInfo: nil)
+  }
 
   public func containsAsset(asset: PHAsset) -> Bool {
     return assets.contains(asset)

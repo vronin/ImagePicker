@@ -141,6 +141,11 @@ public class ImageGalleryView: UIView {
       noImagesLabel.alpha = (height > threshold) ? 1 : (height - Dimensions.galleryBarHeight) / threshold
     }
   }
+    
+  func deviceOrientationChanged() {
+    collectionView.reloadData()
+    selectedStack.reloadAssets()
+  }
 
   // MARK: - Photos handler
 
